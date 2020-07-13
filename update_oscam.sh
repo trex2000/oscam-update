@@ -1,7 +1,7 @@
 #!/bin/sh 
 #configure area
 work_dir="/mnt/local/work"
-oscam_url="http://www.streamboard.tv/svn/oscam/trunk/"
+oscam_url="https://svn.streamboard.tv/oscam/trunk/"
 #oscam_backup_url="http://www.oscam.cc/svn/oscam-mirror/trunk"
 pcscd_url="https://salsa.debian.org/rousseau/"
 ccid_url="https://salsa.debian.org/rousseau/"
@@ -13,7 +13,7 @@ DIRECTORY_OSCAM="${work_dir}/oscam-svn"
 cd $work_dir
 
 echo "Started ccid update"
-if curl -s -m 5 --head  --request GET $ccid_url | grep "200 OK" > /dev/null; then 
+if curl -s -m 5 --head  --request GET $ccid_url | grep "200" > /dev/null; then 
     if [ ! -d "$DIRECTORY_CCID" ]; then
 	echo "New installation of CCID. Cloning git"
 	git clone --recursive "${ccid_url}CCID.git"
@@ -25,6 +25,7 @@ if curl -s -m 5 --head  --request GET $ccid_url | grep "200 OK" > /dev/null; the
     fi
 else
     echo Github is down, cannot update CCID
+    exit
 fi
 ./bootstrap
 ./configure
@@ -33,7 +34,7 @@ make install
 
 cd $work_dir
 echo "Started pccd update"
-if curl -s -m 5 --head  --request GET $pcscd_url | grep "200 OK" > /dev/null; then 
+if curl -s -m 5 --head  --request GET $pcscd_url | grep "200" > /dev/null; then 
     if [ ! -d "$DIRECTORY_PCSC" ]; then
 	echo "New installation. Cloning git"
 	git clone "${pcscd_url}PCSC.git"
@@ -44,7 +45,8 @@ if curl -s -m 5 --head  --request GET $pcscd_url | grep "200 OK" > /dev/null; th
 	git fetch  "${pcscd_url}PCSC.git"
     fi
 else
-    echo Github is down, cannot update
+    echo Github is down, cannot update pcscd
+    exit
 fi
 ./bootstrap
 ./configure --enable-libudev  -enable-debugatr --disable-libusb --enable-usbdropdir=/usr/local/lib/pcsc/drivers
@@ -57,7 +59,7 @@ systemctl start pcscd
 
 cd $work_dir
 echo "Started oscam update"
-if curl -s -m 5 --head  --request GET $oscam_url | grep "200 OK" > /dev/null; then 
+if curl -s -m 5 --head  --request GET $oscam_url | grep "200" > /dev/null; then 
     if [ ! -d "$DIRECTORY_OSCAM" ]; then
 	echo "New installation of OScam"
 	svn checkout  $oscam_url
@@ -81,4 +83,4 @@ else
     echo "SVN repo  is down:"
     echo $oscam_url
     echo "Cannot update OScam"
-fi 
+fi
