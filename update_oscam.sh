@@ -1,8 +1,7 @@
 #!/bin/sh 
 #configure area
 work_dir="/mnt/local/work"
-oscam_url="https://svn.streamboard.tv/oscam/trunk/"
-#oscam_backup_url="http://www.oscam.cc/svn/oscam-mirror/trunk"
+oscam_url="https://git.streamboard.tv/common/oscam.git/ oscam-svn"
 pcscd_url="https://salsa.debian.org/rousseau/"
 ccid_url="https://salsa.debian.org/rousseau/"
 
@@ -62,25 +61,25 @@ echo "Started oscam update"
 if curl -s -m 5 --head  --request GET $oscam_url | grep "200" > /dev/null; then 
     if [ ! -d "$DIRECTORY_OSCAM" ]; then
 	echo "New installation of OScam"
-	svn checkout  $oscam_url
+	git clone $oscam_url
 	cd $DIRECTORY_OSCAM
     else	
 	echo "Existing installation of OSCAM. Getting updates"
 	cd $DIRECTORY_OSCAM
-	svn update
-	if [ ! -d "build" ]; then
-	  mkdir build
-	fi
-	cd build
-	cmake ..
-	make
-	#echo all done, restarting services
-	systemctl stop oscam 
-	make install
-	systemctl restart oscam
+	git fetch --all
     fi
+    if [ ! -d "build" ]; then
+	mkdir build
+    fi
+    cd build
+    cmake ..
+    make
+    #echo all done, restarting services
+    systemctl stop oscam 
+    make install
+    systemctl restart oscam
 else
-    echo "SVN repo  is down:"
+    echo "GIT repo  is down:"
     echo $oscam_url
     echo "Cannot update OScam"
 fi
