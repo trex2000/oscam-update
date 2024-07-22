@@ -1,7 +1,7 @@
 #!/bin/sh 
 #configure area
 work_dir="/mnt/local/work"
-oscam_url="https://git.streamboard.tv/common/oscam.git/ oscam-svn"
+oscam_url="https://git.streamboard.tv/common/oscam.git/ oscam"
 pcscd_url="https://salsa.debian.org/rousseau/"
 ccid_url="https://salsa.debian.org/rousseau/"
 
@@ -20,7 +20,7 @@ if curl -s -m 5 --head  --request GET $ccid_url | grep "200" > /dev/null; then
     else	
 	echo "Existing installation of CCID. Fetching updates"
 	cd $DIRECTORY_CCID
-	git fetch  "${ccid_url}CCID.git"
+	git pull --all "${ccid_url}CCID.git"
     fi
 else
     echo Github is down, cannot update CCID
@@ -41,7 +41,7 @@ if curl -s -m 5 --head  --request GET $pcscd_url | grep "200" > /dev/null; then
     else	
 	echo "Existing installation. Fetching updates"
 	cd $DIRECTORY_PCSC
-	git fetch  "${pcscd_url}PCSC.git"
+	git pull --all  "${pcscd_url}PCSC.git"
     fi
 else
     echo Github is down, cannot update pcscd
@@ -66,7 +66,7 @@ if curl -s -m 5 --head  --request GET $oscam_url | grep "200" > /dev/null; then
     else	
 	echo "Existing installation of OSCAM. Getting updates"
 	cd $DIRECTORY_OSCAM
-	git fetch --all
+	git pull --all
     fi
     if [ ! -d "build" ]; then
 	mkdir build
